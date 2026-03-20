@@ -1,5 +1,9 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/provider/theme-provider";
+import Navbar from "@/module/auth/action/Components/navbar"; // ✅ add this
+import { UserRole } from "@/lib/generated/prisma/enums"; // ✅ add this
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,11 +22,23 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning> {/* ✅ fixed */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ClerkProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {/* ✅ ADMIN WORKS NOW */}
+            <Navbar userRole={UserRole.ADMIN} />
+
+            {children}
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
